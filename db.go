@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"todo/components"
 
 	_ "modernc.org/sqlite"
 )
@@ -56,7 +57,9 @@ func (d *Database) create_todo(w http.ResponseWriter, r *http.Request) {
 	title_type := r.PostFormValue("type")
 
 	if len(title) == 0 || len(title_type) == 0 {
-		fmt.Fprintf(w, "Title or Type cannot be empty")
+		errString := "Title or Type is required"
+		status := components.CreateStatus(false, errString)
+		status.Render(r.Context(), w)
 		return
 	}
 
@@ -67,6 +70,8 @@ func (d *Database) create_todo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	getID, _ := result.LastInsertId()
+	status := components.CreateStatus(true, title)
+	status.Render(r.Context(), w)
+
 	log.Println("New Todo Insert ID:", getID)
-	fmt.Fprintf(w, "Todo Created: %s", title)
 }

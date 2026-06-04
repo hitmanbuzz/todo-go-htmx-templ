@@ -10,7 +10,21 @@ templ Create() {
       <button type="submit">CREATE</button>
       <br>
       <br>
-      <p id="create-status"></p>
+      <div id="create-status"></div>
     </form> 
   </div>
+}
+
+templ CreateStatus(isCreate bool, msg string) {
+  if isCreate {
+    <p>
+      <strong style="color: green;">Todo Created:</strong>
+      {msg}
+    </p>
+  } else {
+    <p>
+      <strong style="color: red;">Error:</strong>
+      {msg}
+    </p>
+  }
 }
