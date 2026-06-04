@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
 	"todo/components"
 
 	_ "modernc.org/sqlite"
@@ -35,10 +36,10 @@ func (d *Database) Init() {
 		CREATE TABLE IF NOT EXISTS todo (
 			id INTEGER PRIMARY KEY,
 			title TEXT,
-			type TEXT
+			type TEXT,
+			duration TEXT
 		)
 	`)
-
 	if err != nil {
 		d.db.Close()
 		log.Fatal(err)
@@ -55,6 +56,7 @@ func (d *Database) create_todo(w http.ResponseWriter, r *http.Request) {
 
 	title := r.PostFormValue("title")
 	title_type := r.PostFormValue("type")
+	duration := r.PostFormValue("duration")
 
 	if len(title) == 0 || len(title_type) == 0 {
 		errString := "Title or Type is required"
@@ -63,7 +65,8 @@ func (d *Database) create_todo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := d.db.Exec(`INSERT INTO todo (title, type) VALUES (?, ?)`, title, title_type)
+	t := ParseTime(duration)
+	result, err := d.db.Exec(`INSERT INTO todo (title, type, duration) VALUES (?, ?, ?)`, title, title_type, t.UTC())
 	if err != nil {
 		fmt.Fprintf(w, "Error inserting new todo")
 		log.Println(err)
@@ -73,5 +76,5 @@ func (d *Database) create_todo(w http.ResponseWriter, r *http.Request) {
 	status := components.CreateStatus(true, title)
 	status.Render(r.Context(), w)
 
-	log.Println("New Todo Insert ID:", getID)
+	log.Printf("ID: %d - Title: %s\n", getID, title)
 }
