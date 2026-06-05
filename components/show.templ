@@ -1,7 +1,13 @@
 package components
 
-templ Show() {
+import "todo/utils"
+
+templ Show(datas []utils.PageData) {
   <div id="show-page">
-    Show Page
+    <ol>
+      for _, data := range datas {
+        <li>{data.Title}</li>
+      }
+    </ol>
   </div>
 }

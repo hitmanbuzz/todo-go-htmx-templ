@@ -5,10 +5,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"todo/components"
+	"todo/utils"
 
 	_ "modernc.org/sqlite"
+)
+
+var (
+	// per-page data
+	LIMIT int64 = 10
 )
 
 type Database struct {
@@ -65,7 +72,7 @@ func (d *Database) create_todo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := ParseTime(duration)
+	t := utils.ParseTime(duration)
 	result, err := d.db.Exec(`INSERT INTO todo (title, type, duration) VALUES (?, ?, ?)`, title, title_type, t.UTC())
 	if err != nil {
 		fmt.Fprintf(w, "Error inserting new todo")
@@ -77,4 +84,65 @@ func (d *Database) create_todo(w http.ResponseWriter, r *http.Request) {
 	status.Render(r.Context(), w)
 
 	log.Printf("ID: %d - Title: %s\n", getID, title)
+}
+
+func (d *Database) show_page(w http.ResponseWriter, r *http.Request) {
+	page := r.URL.Query().Get("page")
+	if page == "" {
+		page = "1"
+	}
+
+	pageInt, err := strconv.ParseInt(page, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "page doesn't exist")
+		return
+	}
+
+	fmt.Printf("Page: %d\n", pageInt)
+
+	data, err := d.FetchPageData(pageInt)
+	if err != nil {
+		w.WriteHeader(http.StatusNoContent)
+		fmt.Fprintf(w, "data not found")
+		return
+	}
+
+	if r.Header.Get("Hx-Request") == "true" {
+		show := components.Show(data)
+		show.Render(r.Context(), w)
+		return
+	}
+
+	show := components.Show(data)
+	RenderLayout(r.Context(), w, show)
+}
+
+func (d *Database) FetchPageData(page int64) ([]utils.PageData, error) {
+	var page_data []utils.PageData
+	offset := (page - 1) * LIMIT
+	fmt.Println("data page:", page)
+	fmt.Println("offset:", offset)
+
+	rows, err := d.db.Query(`
+		SELECT * FROM todo
+		ORDER BY id
+		LIMIT ? OFFSET ?
+	`, LIMIT, offset)
+
+	if err != nil {
+		return page_data, err
+	}
+
+	for rows.Next() {
+		var data utils.PageData
+		if err := rows.Scan(&data.Id, &data.Title, &data.Ttype, &data.Duration); err != nil {
+			return page_data, err
+		}
+
+		page_data = append(page_data, data)
+	}
+
+	log.Println("data fetched from db")
+	return page_data, nil
 }

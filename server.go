@@ -31,10 +31,10 @@ func (s *Server) Run() {
 
 func (s *Server) Routes() {
 	s.mux.HandleFunc("GET /{$}", layout_page)
-	s.mux.HandleFunc("GET /home", home_page)
-	s.mux.HandleFunc("GET /create", create_page)
+	s.mux.HandleFunc("GET /home/", home_page)
+	s.mux.HandleFunc("GET /create/", create_page)
 	s.mux.HandleFunc("POST /create-todo", s.db.create_todo)
-	s.mux.HandleFunc("GET /show", show_page)
+	s.mux.HandleFunc("GET /show", s.db.show_page)
 	s.mux.HandleFunc("GET /favicon.ico", load_favicon)
 }
 
@@ -67,16 +67,6 @@ func create_page(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RenderLayout(r.Context(), w, create)
-}
-
-func show_page(w http.ResponseWriter, r *http.Request) {
-	show := components.Show()
-	if r.Header.Get("Hx-Request") == "true" {
-		show.Render(r.Context(), w)
-		return
-	}
-
-	RenderLayout(r.Context(), w, show)
 }
 
 func load_favicon(w http.ResponseWriter, r *http.Request) {

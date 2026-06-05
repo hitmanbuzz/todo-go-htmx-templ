@@ -1,2 +1,3 @@
 components/*_templ.go
 tmp/
+*.db

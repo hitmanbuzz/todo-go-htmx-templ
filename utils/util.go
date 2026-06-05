@@ -1,6 +1,13 @@
-package main
+package utils
 
 import "time"
+
+type PageData struct {
+	Id       int
+	Title    string
+	Ttype    string
+	Duration string
+}
 
 var TIME_FORMAT = "2006-01-02T15:04"
 
