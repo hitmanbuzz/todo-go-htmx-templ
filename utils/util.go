@@ -9,7 +9,11 @@ type PageData struct {
 	Duration string
 }
 
-var TIME_FORMAT = "2006-01-02T15:04"
+var (
+	// per-page data
+	LIMIT       int64 = 3
+	TIME_FORMAT       = "2006-01-02T15:04"
+)
 
 // return local time
 func ParseTime(input string) time.Time {

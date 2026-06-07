@@ -1,19 +1,68 @@
 package components
 
 templ Create() {
-  <div id="create-page">
-    <form hx-post="/create-todo" hx-target="#create-status">
-      <label for="todo-title">Title:</label>
-      <input type="text" id="todo-title" name="title" placeholder="Enter todo title"><br><br>
-      <label for="todo-type">Type:</label>
-      <input type="text" id="todo-type" name="type" placeholder="Enter todo type"><br><br>
-      <label for="todo-duration">Duration:</label>
-      <input type="datetime-local" id="todo-duration" name="duration"><br><br>
-      <button type="submit">CREATE</button>
-      <br>
-      <br>
-    </form> 
-    <div id="create-status"></div>
+  <div id="create-page" class="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Create New Todo</h2>
+      
+      <form hx-post="/create-todo" hx-target="#create-status" class="space-y-5">
+        <div>
+          <label for="todo-title" class="block text-sm font-medium text-gray-700 mb-1">
+            Title
+          </label>
+          <input 
+            type="text" 
+            id="todo-title" 
+            name="title" 
+            placeholder="Enter todo title"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                   placeholder-gray-400 
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+        </div>
+
+        <div>
+          <label for="todo-type" class="block text-sm font-medium text-gray-700 mb-1">
+            Type
+          </label>
+          <input 
+            type="text" 
+            id="todo-type" 
+            name="type" 
+            placeholder="Enter todo type"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                   placeholder-gray-400 
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+        </div>
+
+        <div>
+          <label for="todo-duration" class="block text-sm font-medium text-gray-700 mb-1">
+            Duration
+          </label>
+          <input 
+            type="datetime-local" 
+            id="todo-duration" 
+            name="duration"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                   text-gray-700
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+        </div>
+
+        <button 
+          type="submit"
+          class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md 
+                 shadow-sm text-sm font-medium text-white bg-blue-600 
+                 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                 transition-colors duration-200"
+        >
+          Create
+        </button>
+      </form>
+
+      <div id="create-status" class="mt-4 text-center text-sm text-gray-600"></div>
+    </div>
   </div>
 }
 

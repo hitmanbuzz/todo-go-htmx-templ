@@ -13,11 +13,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-var (
-	// per-page data
-	LIMIT int64 = 10
-)
-
 type Database struct {
 	db *sql.DB
 }
@@ -99,36 +94,47 @@ func (d *Database) show_page(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Page: %d\n", pageInt)
-
-	data, err := d.FetchPageData(pageInt)
+	data, err := d.fetchPageData(pageInt)
 	if err != nil {
 		w.WriteHeader(http.StatusNoContent)
 		fmt.Fprintf(w, "data not found")
 		return
 	}
 
+	totalRows := d.GetTotalRows()
+	totalPage := totalRows / utils.LIMIT
+
 	if r.Header.Get("Hx-Request") == "true" {
-		show := components.Show(data)
+		show := components.Show(data, int(pageInt), int(totalPage))
 		show.Render(r.Context(), w)
 		return
 	}
 
-	show := components.Show(data)
+	show := components.Show(data, int(pageInt), int(totalPage))
 	RenderLayout(r.Context(), w, show)
 }
 
-func (d *Database) FetchPageData(page int64) ([]utils.PageData, error) {
+func (d *Database) GetTotalRows() int64 {
+	var rowsCount int64
+
+	rows := d.db.QueryRow("SELECT COUNT(*) from todo")
+	err := rows.Scan(&rowsCount)
+	if err != nil {
+		return 0
+	}
+
+	return rowsCount
+}
+
+func (d *Database) fetchPageData(page int64) ([]utils.PageData, error) {
 	var page_data []utils.PageData
-	offset := (page - 1) * LIMIT
-	fmt.Println("data page:", page)
-	fmt.Println("offset:", offset)
+	offset := (page - 1) * utils.LIMIT
 
 	rows, err := d.db.Query(`
 		SELECT * FROM todo
 		ORDER BY id
 		LIMIT ? OFFSET ?
-	`, LIMIT, offset)
+	`, utils.LIMIT, offset)
 
 	if err != nil {
 		return page_data, err

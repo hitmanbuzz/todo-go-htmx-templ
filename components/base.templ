@@ -7,6 +7,7 @@ templ Layout(title string, content templ.Component) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" 
           integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
           crossorigin="anonymous"></script>
@@ -22,9 +23,24 @@ templ Layout(title string, content templ.Component) {
 }
 
 templ NavButtons() {
-  <div id="nav-button" hx-target="#page" hx-push-url="true">
-    <button type="button" hx-get="/home">Home</button>
-    <button type="button" hx-get="/create">Create</button>
-    <button type="button" hx-get="/show">Show</button>
-  </div>
+  <nav class="flex gap-x-3 px-3 py-2 text-sm" id="nav-buttons" hx-target="#page" hx-push-url="true">
+    <button type="button" hx-get="/home"
+      class="px-1 border border-black text-gray-500 
+         hover:bg-gray-300 hover:text-black
+         focus:outline-none focus:ring-1 cursor-pointer">
+      Home
+    </button>
+    <button type="button" hx-get="/create"
+      class="px-1 border border-black text-gray-500
+           hover:bg-gray-300 hover:text-black 
+           focus:outline-none focus:ring-1 cursor-pointer">
+      Create
+    </button>
+    <button type="button" hx-get="/show"
+      class="px-1 border border-black text-gray-500
+           hover:bg-gray-300 hover:text-black 
+           focus:outline-none focus:ring-1 cursor-pointer">
+      Show
+    </button>
+  </nav>
 }

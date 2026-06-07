@@ -1,13 +1,86 @@
 package components
 
 import "todo/utils"
+import "fmt"
 
-templ Show(datas []utils.PageData) {
-  <div id="show-page">
-    <ol>
-      for _, data := range datas {
-        <li>{data.Title}</li>
+templ Show(datas []utils.PageData, currPage, totalPage int) {
+  <div id="show-page" class="max-w-4xl mx-auto p-4 sm:p-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Todos</h2>
+
+    <!-- data list -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <ul class="divide-y divide-gray-100">
+        for _, data := range datas {
+          <li class="px-5 py-4 hover:bg-gray-50 transition-colors duration-150 flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span class="text-gray-800 font-medium">{data.Title}</span>
+            </div>
+            <!-- TODO: Duration -->
+          </li>
+        }
+      </ul>
+      if len(datas) == 0 {
+        <div class="px-5 py-12 text-center">
+          <p class="text-gray-500 text-sm">No todos found. Create one to get started!</p>
+        </div>
       }
-    </ol>
+    </div>
+
+    <!-- pagination -->
+    if totalPage > 1 {
+      <nav class="mt-6 flex items-center justify-center gap-1" aria-label="Pagination">
+        <!-- previous -->
+        if currPage > 1 {
+          <a href="" 
+             hx-get={ templ.URL(fmt.Sprintf("/show?page=%d", currPage-1))}
+             hx-target="#show-page"
+             hx-swap="innerHTML"
+             hx-push-url="true"
+             class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300 transition-colors">
+            &larr; Prev
+          </a>
+        } else {
+          <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-50 border border-gray-200 rounded-lg pointer-events-none cursor-not-allowed">
+            &larr; Prev
+          </span>
+        }
+
+        <!-- page numbers -->
+        for i := 1; i <= totalPage; i++ {
+          if i == currPage {
+            <span aria-current="page" 
+                  class="px-3 py-2 text-sm font-semibold text-white bg-blue-600 border border-blue-600 rounded-lg shadow-sm">
+              {i}
+            </span>
+          } else {
+            <a href=""
+               hx-get={ templ.URL(fmt.Sprintf("/show?page=%d", i))}
+               hx-target="#show-page"
+               hx-swap="innerHTML"
+               hx-push-url="true"
+               class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300 transition-colors">
+              {i}
+            </a>
+          }
+        }
+
+        <!-- next -->
+        if currPage < totalPage {
+          <a href="" 
+             hx-get={ templ.URL(fmt.Sprintf("/show?page=%d", currPage+1))}
+             hx-target="#show-page"
+             hx-swap="innerHTML"
+             hx-push-url="true"
+             class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300 transition-colors">
+            Next &rarr;
+          </a>
+        } else {
+          <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-50 border border-gray-200 rounded-lg pointer-events-none cursor-not-allowed">
+            Next &rarr;
+          </span>
+        }
+      </nav>
+    }
   </div>
 }

@@ -30,6 +30,8 @@ func (s *Server) Run() {
 }
 
 func (s *Server) Routes() {
+	s.mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
+
 	s.mux.HandleFunc("GET /{$}", layout_page)
 	s.mux.HandleFunc("GET /home/", home_page)
 	s.mux.HandleFunc("GET /create/", create_page)
