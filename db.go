@@ -102,6 +102,11 @@ func (d *Database) show_page(w http.ResponseWriter, r *http.Request) {
 	}
 
 	totalRows := d.GetTotalRows()
+
+	if totalRows%utils.LIMIT != 0 {
+		totalRows += 1
+	}
+
 	totalPage := totalRows / utils.LIMIT
 
 	if r.Header.Get("Hx-Request") == "true" {
