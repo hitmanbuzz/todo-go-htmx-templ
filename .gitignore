@@ -2,3 +2,4 @@ components/*_templ.go
 tmp/
 *.db
 node_modules
+assets/css/output.css
